@@ -1,3 +1,6 @@
+--only-binary :all:
+--find-links https://download.pytorch.org/whl/torch_stable.html
+
 Flask==3.0.3
 Flask-Cors==4.0.0
 gunicorn==22.0.0
@@ -10,7 +13,7 @@ PyPDF2==3.0.1
 python-docx==1.1.2
 sentence-transformers==4.0.2
 transformers==4.47.0
-torch==2.5.1
+torch==2.5.1+cpu
 scikit-learn==1.6.1
 spacy==3.8.4
 langchain==0.3.23
