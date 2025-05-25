@@ -1,0 +1,1465 @@
+/* General Styles */
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #1A1A1A;
+  margin: 0;
+  padding: 0;
+  color: #E0E0E0;
+  line-height: 1.5;
+  scroll-behavior: smooth;
+}
+
+.homedoop-min-h-screen {
+  min-height: 100vh;
+  background-color: #1A1A1A;
+}
+
+/* Header Styles */
+.homedoop-header-home {
+  background-color: #1A1A1A;
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Logo */
+.homedoop-text-2xl {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+  transition: transform 0.3s ease;
+}
+
+.homedoop-text-2xl:hover {
+  transform: scale(1.1);
+}
+
+/* Desktop Navigation */
+.homedoop-nav-menu {
+  display: flex;
+  align-items: center;
+}
+
+.homedoop-nav-menu ul {
+  display: flex;
+  list-style: none;
+  gap: 24px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  flex-wrap: nowrap;
+}
+
+.homedoop-nav-link {
+  color: #FFFFFF;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.homedoop-nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  transform: translateY(-3px);
+}
+
+.homedoop-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #3498DB;
+  transition: width 0.3s ease;
+}
+
+.homedoop-nav-link:hover::after {
+  width: 100%;
+}
+
+/* Buttons */
+.homedoop-signin-button,
+.homedoop-register-button {
+  background: linear-gradient(45deg, #3498DB, #2980B9);
+  color: #FFFFFF;
+  padding: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 40px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.homedoop-signin-button::before,
+.homedoop-register-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.homedoop-signin-button:hover,
+.homedoop-register-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
+}
+
+.homedoop-signin-button:hover::before,
+.homedoop-register-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Mobile Menu */
+.homedoop-mobile-menu {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+}
+
+.homedoop-dropdown-button {
+  background: transparent;
+  color: #FFFFFF;
+  padding: 6px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 110px;
+  height: 40px;
+  cursor: pointer;
+}
+
+.homedoop-dropdown-button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.05);
+}
+
+/* Mobile Dropdown */
+.homedoop-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 10px;
+  width: 200px;
+  background-color: #1A1A1A;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+  z-index: 1001;
+  padding: 8px;
+}
+
+.homedoop-dropdown-menu.homedoop-open {
+  display: block;
+}
+
+.homedoop-dropdown-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.homedoop-dropdown-link {
+  display: block;
+  color: #FFFFFF;
+  padding: 10px 14px;
+  text-decoration: none;
+  font-size: 16px;
+  transition: background-color 0.3s ease;
+}
+
+.homedoop-dropdown-link:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Hero Section */
+.homedoop-hero-section {
+  background-image: url("https://www.lawnn.com/wp-content/uploads/2019/02/Top-20-Landmark-Supreme-Court-Important-Judgments-On-Labour-Law.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  top: 64px;
+}
+
+.homedoop-hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.homedoop-hero-overlay {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  border-radius: 10px;
+  color: #FFFFFF;
+  max-width: 90%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.homedoop-welcome-title {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.homedoop-hero-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.homedoop-hero-text {
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+.homedoop-hero-button {
+  margin-top: 16px;
+  background: linear-gradient(45deg, #3498DB, #2980B9);
+  color: #FFFFFF;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.homedoop-hero-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.homedoop-hero-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
+}
+
+.homedoop-hero-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Sections */
+.homedoop-section {
+  padding: 80px 16px 40px;
+  margin-top: 40px;
+  background-color: #2A2A2A;
+  text-align: center;
+  scroll-margin-top: 80px;
+}
+
+.homedoop-section-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #FFFFFF;
+  position: relative;
+}
+
+.homedoop-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background-color: #3498DB;
+}
+
+/* Cards */
+.homedoop-card-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  justify-content: center;
+  padding: 16px;
+  margin: 0 auto;
+  max-width: 1200px;
+}
+
+.homedoop-card {
+  background: #2A2A2A;
+  padding: 16px;
+  border-bottom: 3px solid #3498DB;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.homedoop-card:hover {
+  transform: scale(1.02);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+}
+
+.homedoop-card-icon {
+  color: #3498DB;
+  margin-bottom: 8px;
+  width: 36px;
+  height: 36px;
+}
+
+.homedoop-card h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 6px 0;
+  color: #FFFFFF;
+}
+
+.homedoop-card p {
+  font-size: 14px;
+  color: #E0E0E0;
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* Feedback Section */
+.homedoop-feedback-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: linear-gradient(135deg, #2A2A2A, #3A3A3A);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+  max-width: 500px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.homedoop-feedback-icon {
+  color: #3498DB;
+  margin-bottom: 8px;
+  width: 36px;
+  height: 36px;
+}
+
+.homedoop-feedback-text {
+  font-size: 16px;
+  margin-top: 8px;
+  color: #E0E0E0;
+}
+
+.homedoop-feedback-input {
+  width: 100%;
+  min-height: 80px;
+  padding: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 14px;
+  resize: vertical;
+  background: #3A3A3A;
+  color: #E0E0E0;
+  transition: all 0.3s ease;
+}
+
+.homedoop-feedback-input:focus {
+  border-color: #3498DB;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.3);
+  outline: none;
+}
+
+.homedoop-feedback-button {
+  margin-top: 12px;
+  background: linear-gradient(45deg, #3498DB, #2980B9);
+  color: #FFFFFF;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.homedoop-feedback-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s ease, height 0.6s ease;
+}
+
+.homedoop-feedback-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(52, 152, 219, 0.5);
+}
+
+.homedoop-feedback-button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Footer */
+.homedoop-footer-home {
+  background: #1A1A1A;
+  color: #E0E0E0;
+  padding: 20px 16px;
+  text-align: center;
+  margin-top: 32px;
+}
+
+.homedoop-footer-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #FFFFFF;
+}
+
+.homedoop-social-cards {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.homedoop-social-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 14px;
+  border-radius: 12px;
+  width: 120px;
+  text-align: center;
+  color: #FFFFFF;
+  font-weight: 600;
+  font-size: 14px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.homedoop-social-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.homedoop-social-icon {
+  margin-bottom: 8px;
+  width: 36px;
+  height: 36px;
+}
+
+.homedoop-social-card p {
+  margin: 0;
+}
+
+/* Social Card Colors */
+.homedoop-facebook { background-color: #3B5998; }
+.homedoop-twitter { background-color: #1DA1F2; }
+.homedoop-instagram { background: linear-gradient(45deg, #F09433, #E6683C, #DC2743, #CC2366, #BC1888); }
+.homedoop-linkedin { background-color: #0077B5; }
+
+/* Toastify Overrides */
+.Toastify__toast {
+  top: 80px !important;
+  right: 15px !important;
+  width: 320px;
+  max-width: 90%;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 10px 16px;
+  color: #FFFFFF;
+  transition: all 0.3s ease;
+  z-index: 1002;
+}
+
+.Toastify__toast:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5);
+  transform: translateY(-3px);
+}
+
+.Toastify__toast--warning {
+  background: linear-gradient(135deg, #636E72, #2D3436);
+}
+
+.Toastify__toast-body {
+  margin: 0;
+  padding: 0;
+}
+
+.Toastify__toast-icon {
+  width: 26px;
+  height: 26px;
+}
+
+.Toastify__close-button {
+  color: #FFFFFF;
+  opacity: 0.8;
+  transition: opacity 0.3s ease;
+  right: 5px;
+  font-size: 14px;
+}
+
+.Toastify__close-button:hover {
+  opacity: 1;
+}
+
+/* Animations */
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes reveal {
+  from { clip-path: inset(0 100% 0 0); }
+  to { clip-path: inset(0 0 0 0); }
+}
+
+@keyframes bounceIn {
+  0% { opacity: 0; transform: scale(0.3) translateY(50px); }
+  50% { opacity: 1; transform: scale(1.1); }
+  70% { transform: scale(0.95); }
+  100% { transform: scale(1); }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+@keyframes sparkle {
+  0% { opacity: 0; transform: scale(0); }
+  50% { opacity: 0.8; transform: scale(1.2); }
+  100% { opacity: 0; transform: scale(0); }
+}
+
+/* Sparkle Animation for Social Cards (Below 768px) */
+@media (max-width: 768px) {
+  .homedoop-social-card {
+    position: relative;
+  }
+
+  .homedoop-social-card::before {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, #FFD700 20%, #FFFFFF 60%, transparent);
+    border-radius: 50%;
+    top: -5px;
+    left: 10%;
+    z-index: 1;
+    animation: sparkle 1.5s infinite ease-in-out;
+    aria-hidden: true;
+  }
+
+  .homedoop-social-card:nth-child(1)::before { animation-delay: 0.2s; }
+  .homedoop-social-card:nth-child(2)::before { animation-delay: 0.3s; }
+  .homedoop-social-card:nth-child(3)::before { animation-delay: 0.4s; }
+  .homedoop-social-card:nth-child(4)::before { animation-delay: 0.5s; }
+}
+
+/* Responsive Styles */
+@media (max-width: 930px) {
+  .homedoop-header-home {
+    padding: 12px 12px;
+  }
+
+  .homedoop-nav-menu ul {
+    gap: 16px;
+  }
+
+  .homedoop-nav-link {
+    font-size: 1rem;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .homedoop-signin-button,
+  .homedoop-register-button {
+    width: 90px;
+    height: 32px;
+    font-size: 14px;
+    padding: 6px;
+  }
+
+  .homedoop-nav-link:hover {
+    transform: none;
+  }
+}
+
+@media (max-width: 780px) {
+  .homedoop-header-home {
+    padding: 12px 8px;
+  }
+
+  .homedoop-text-2xl {
+    font-size: 1.4rem;
+  }
+
+  .homedoop-nav-menu ul {
+    gap: 10px;
+  }
+
+  .homedoop-nav-link {
+    font-size: 0.9rem;
+    padding: 0.5rem 0.5rem;
+  }
+
+  .homedoop-signin-button,
+  .homedoop-register-button {
+    width: 80px;
+    height: 28px;
+    font-size: 13px;
+    padding: 4px;
+  }
+}
+
+@media (min-width: 769px) {
+  .homedoop-nav-menu {
+    display: flex;
+  }
+
+  .homedoop-mobile-menu {
+    display: none !important;
+  }
+
+  .homedoop-dropdown-menu {
+    display: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .homedoop-nav-menu {
+    display: none;
+  }
+
+  .homedoop-mobile-menu {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    padding-right: 8px;
+  }
+
+  .homedoop-signin-button,
+  .homedoop-register-button,
+  .homedoop-dropdown-button {
+    width: 90px;
+    height: 32px;
+    padding: 4px;
+    font-size: 12px;
+    border-radius: 4px;
+  }
+
+  .homedoop-dropdown-menu {
+    top: 60px;
+    right: 8px;
+    width: 180px;
+    padding: 6px;
+  }
+
+  .homedoop-hero-section {
+    min-height: calc(100vh - 60px);
+    top: 60px;
+  }
+
+  .homedoop-hero-overlay {
+    padding: 16px;
+    max-width: 95%;
+  }
+
+  .homedoop-welcome-title {
+    font-size: 28px;
+    margin-bottom: 12px;
+  }
+
+  .homedoop-hero-title {
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  .homedoop-hero-text {
+    font-size: 14px;
+    margin-top: 6px;
+  }
+
+  .homedoop-hero-button {
+    margin-top: 12px;
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .homedoop-section {
+    padding: 80px 12px 32px;
+    margin-top: 40px;
+    scroll-margin-top: 80px;
+  }
+
+  .homedoop-section-title {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .homedoop-card-container {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    padding: 12px;
+    max-width: 960px;
+  }
+
+  .homedoop-card {
+    padding: 12px;
+    font-size: 12px;
+  }
+
+  .homedoop-card-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 6px;
+  }
+
+  .homedoop-card h4 {
+    font-size: 16px;
+    margin: 4px 0;
+  }
+
+  .homedoop-card p {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  .homedoop-feedback-container {
+    padding: 16px;
+    max-width: 400px;
+  }
+
+  .homedoop-feedback-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 6px;
+  }
+
+  .homedoop-feedback-input {
+    min-height: 60px;
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .homedoop-feedback-text {
+    font-size: 14px;
+    margin-top: 6px;
+  }
+
+  .homedoop-feedback-button {
+    margin-top: 10px;
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .homedoop-footer-home {
+    padding: 16px 12px;
+    margin-top: 24px;
+  }
+
+  .homedoop-footer-title {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .homedoop-social-cards {
+    gap: 10px;
+  }
+
+  .homedoop-social-card {
+    width: 100px;
+    padding: 12px;
+  }
+
+  .homedoop-social-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 6px;
+  }
+
+  .homedoop-social-card p {
+    font-size: 12px;
+  }
+
+  .Toastify__toast {
+    top: 76px !important;
+    width: 280px;
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .Toastify__toast-body {
+    font-size: 12px;
+  }
+
+  .Toastify__toast-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .Toastify__close-button {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+@media (max-width: 568px) {
+  .homedoop-header-home {
+    padding: 10px 12px;
+  }
+
+  .homedoop-text-2xl {
+    font-size: 1.25rem;
+  }
+
+  .homedoop-mobile-menu {
+    gap: 4px;
+    padding-right: 6px;
+  }
+
+  .homedoop-signin-button,
+  .homedoop-register-button,
+  .homedoop-dropdown-button {
+    width: 80px;
+    height: 28px;
+    padding: 3px;
+    font-size: 11px;
+    border-radius: 3px;
+  }
+
+  .homedoop-dropdown-menu {
+    top: 56px;
+    right: 6px;
+    width: 160px;
+    padding: 4px;
+  }
+
+  .homedoop-dropdown-link {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+
+  .homedoop-hero-section {
+    min-height: calc(100vh - 56px);
+    top: 56px;
+  }
+
+  .homedoop-hero-overlay {
+    padding: 12px;
+    max-width: 98%;
+  }
+
+  .homedoop-welcome-title {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .homedoop-hero-title {
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+
+  .homedoop-hero-text {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .homedoop-hero-button {
+    margin-top: 10px;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .homedoop-section {
+    padding: 80px 8px 24px;
+    margin-top: 40px;
+    scroll-margin-top: 80px;
+  }
+
+  .homedoop-section-title {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .homedoop-card-container {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 10px;
+    max-width: 400px;
+  }
+
+  .homedoop-card {
+    padding: 10px;
+    font-size: 11px;
+  }
+
+  .homedoop-card-icon {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 4px;
+  }
+
+  .homedoop-card h4 {
+    font-size: 14px;
+    margin: 3px 0;
+  }
+
+  .homedoop-card p {
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .homedoop-feedback-container {
+    padding: 12px;
+    max-width: 320px;
+  }
+
+  .homedoop-feedback-icon {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 4px;
+  }
+
+  .homedoop-feedback-input {
+    min-height: 50px;
+    padding: 4px;
+    font-size: 11px;
+  }
+
+  .homedoop-feedback-text {
+    font-size: 12px;
+    margin-top: 4px;
+  }
+
+  .homedoop-feedback-button {
+    margin-top: 8px;
+    padding: 6px 12px;
+    font-size: 11px;
+  }
+
+  .homedoop-footer-home {
+    padding: 12px 8px;
+    margin-top: 16px;
+  }
+
+  .homedoop-footer-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .homedoop-social-cards {
+    gap: 8px;
+  }
+
+  .homedoop-social-card {
+    width: 90px;
+    padding: 10px;
+  }
+
+  .homedoop-social-icon {
+    width: 28px;
+    height: 28px;
+    margin-bottom: 4px;
+  }
+
+  .homedoop-social-card p {
+    font-size: 11px;
+  }
+
+  .Toastify__toast {
+    top: 72px !important;
+    width: 240px;
+    font-size: 11px;
+    padding: 5px;
+  }
+
+  .Toastify__toast-body {
+    font-size: 11px;
+  }
+
+  .Toastify__toast-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .Toastify__close-button {
+    width: 16px;
+    height: 16px;
+  }
+}
+
+@media (max-width: 375px) {
+  .homedoop-header-home {
+    padding: 8px 8px;
+  }
+
+  .homedoop-text-2xl {
+    font-size: 1.1rem;
+  }
+
+  .homedoop-mobile-menu {
+    gap: 6px;
+    padding-right: 4px;
+    margin-left: 8px;
+  }
+
+  .homedoop-signin-button,
+  .homedoop-register-button,
+  .homedoop-dropdown-button {
+    width: 60px;
+    height: 24px;
+    padding: 2px;
+    font-size: 9px;
+    border-radius: 3px;
+  }
+
+  .homedoop-signin-button:hover,
+  .homedoop-register-button:hover,
+  .homedoop-dropdown-button:hover {
+    transform: scale(1.05);
+  }
+
+  .homedoop-dropdown-menu {
+    top: 48px;
+    right: 4px;
+    width: 140px;
+    padding: 3px;
+  }
+
+  .homedoop-dropdown-link {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .homedoop-hero-section {
+    min-height: calc(100vh - 48px);
+    top: 48px;
+  }
+
+  .homedoop-hero-overlay {
+    padding: 10px;
+    max-width: 100%;
+  }
+
+  .homedoop-welcome-title {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .homedoop-hero-title {
+    font-size: 16px;
+    margin-bottom: 3px;
+  }
+
+  .homedoop-hero-text {
+    font-size: 11px;
+    margin-top: 3px;
+  }
+
+  .homedoop-hero-button {
+    margin-top: 8px;
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+
+  .homedoop-section {
+    padding: 80px 6px 20px;
+    margin-top: 40px;
+    scroll-margin-top: 80px;
+  }
+
+  .homedoop-section-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .homedoop-card-container {
+    gap: 8px;
+    padding: 8px;
+    max-width: 300px;
+  }
+
+  .homedoop-card {
+    padding: 8px;
+    font-size: 10px;
+  }
+
+  .homedoop-card-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+  }
+
+  .homedoop-card h4 {
+    font-size: 12px;
+    margin: 2px 0;
+  }
+
+  .homedoop-card p {
+    font-size: 10px;
+    line-height: 1.1;
+  }
+
+  .homedoop-feedback-container {
+    padding: 10px;
+    max-width: 280px;
+  }
+
+  .homedoop-feedback-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+  }
+
+  .homedoop-feedback-input {
+    min-height: 40px;
+    padding: 3px;
+    font-size: 10px;
+  }
+
+  .homedoop-feedback-text {
+    font-size: 11px;
+    margin-top: 3px;
+  }
+
+  .homedoop-feedback-button {
+    margin-top: 6px;
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+
+  .homedoop-footer-home {
+    padding: 10px 6px;
+    margin-top: 12px;
+  }
+
+  .homedoop-footer-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .homedoop-social-cards {
+    gap: 6px;
+  }
+
+  .homedoop-social-card {
+    width: 80px;
+    padding: 8px;
+  }
+
+  .homedoop-social-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+  }
+
+  .homedoop-social-card p {
+    font-size: 10px;
+  }
+
+  .Toastify__toast {
+    top: 64px !important;
+    width: 220px;
+    font-size: 10px;
+    padding: 6px 20px 6px 6px;
+  }
+
+  .Toastify__toast-body {
+    font-size: 10px;
+    padding-right: 20px;
+  }
+
+  .Toastify__toast-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .Toastify__close-button {
+    width: 14px;
+    height: 14px;
+    right: 5px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 320px) {
+  .homedoop-header-home {
+    padding: 8px 8px;
+  }
+
+  .homedoop-text-2xl {
+    font-size: 1rem;
+  }
+
+  .homedoop-mobile-menu {
+    gap: 6px;
+    padding-right: 4px;
+    margin-left: 8px;
+  }
+
+  .homedoop-signin-button,
+  .homedoop-register-button,
+  .homedoop-dropdown-button {
+    width: 60px;
+    height: 24px;
+    padding: 2px;
+    font-size: 9px;
+    border-radius: 3px;
+  }
+
+  .homedoop-dropdown-menu {
+    top: 48px;
+    right: 4px;
+    width: 140px;
+    padding: 3px;
+  }
+
+  .homedoop-dropdown-link {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .homedoop-hero-section {
+    min-height: calc(100vh - 48px);
+    top: 48px;
+  }
+
+  .homedoop-hero-overlay {
+    padding: 10px;
+    max-width: 100%;
+  }
+
+  .homedoop-welcome-title {
+    font-size: 20px;
+    margin-bottom: 8px;
+  }
+
+  .homedoop-hero-title {
+    font-size: 16px;
+    margin-bottom: 3px;
+  }
+
+  .homedoop-hero-text {
+    font-size: 11px;
+    margin-top: 3px;
+  }
+
+  .homedoop-hero-button {
+    margin-top: 8px;
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+
+  .homedoop-section {
+    padding: 80px 6px 20px;
+    margin-top: 40px;
+    scroll-margin-top: 80px;
+  }
+
+  .homedoop-section-title {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+
+  .homedoop-card-container {
+    gap: 8px;
+    padding: 8px;
+    max-width: 300px;
+  }
+
+  .homedoop-card {
+    padding: 8px;
+    font-size: 10px;
+  }
+
+  .homedoop-card-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+  }
+
+  .homedoop-card h4 {
+    font-size: 12px;
+    margin: 2px 0;
+  }
+
+  .homedoop-card p {
+    font-size: 10px;
+    line-height: 1.1;
+  }
+
+  .homedoop-feedback-container {
+    padding: 10px;
+    max-width: 280px;
+  }
+
+  .homedoop-feedback-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+  }
+
+  .homedoop-feedback-input {
+    min-height: 40px;
+    padding: 3px;
+    font-size: 10px;
+  }
+
+  .homedoop-feedback-text {
+    font-size: 11px;
+    margin-top: 3px;
+  }
+
+  .homedoop-feedback-button {
+    margin-top: 6px;
+    padding: 5px 10px;
+    font-size: 10px;
+  }
+
+  .homedoop-footer-home {
+    padding: 10px 6px;
+    margin-top: 12px;
+  }
+
+  .homedoop-footer-title {
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .homedoop-social-cards {
+    gap: 6px;
+  }
+
+  .homedoop-social-card {
+    width: 80px;
+    padding: 8px;
+  }
+
+  .homedoop-social-icon {
+    width: 24px;
+    height: 24px;
+    margin-bottom: 4px;
+  }
+
+  .homedoop-social-card p {
+    font-size: 10px;
+  }
+
+  .Toastify__toast {
+    top: 64px !important;
+    width: 220px;
+    font-size: 10px;
+    padding: 6px 20px 6px 6px;
+  }
+
+  .Toastify__toast-body {
+    font-size: 10px;
+    padding-right: 20px;
+  }
+
+  .Toastify__toast-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .Toastify__close-button {
+    width: 14px;
+    height: 14px;
+    right: 5px;
+    font-size: 12px;
+  }
+}
+
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  .homedoop-text-2xl:hover,
+  .homedoop-nav-link:hover,
+  .homedoop-signin-button:hover,
+  .homedoop-register-button:hover,
+  .homedoop-dropdown-button:hover,
+  .homedoop-hero-button:hover,
+  .homedoop-card:hover,
+  .homedoop-feedback-button:hover,
+  .homedoop-social-card:hover,
+  .homedoop-social-card::before {
+    animation: none;
+    transition: none;
+    transform: none;
+    box-shadow: none;
+  }
+}

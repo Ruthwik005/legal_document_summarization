@@ -1,0 +1,181 @@
+.feedbacklist-container {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.feedbacklist-container h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #2c3e50;
+  text-align: center;
+}
+
+.feedbacklist-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feedbacklist-item {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feedbacklist-item.feedbacklist-bookmarked {
+  border-left: 5px solid #f1c40f;
+}
+
+.feedbacklist-content p {
+  margin: 5px 0;
+  color: #2c3e50;
+}
+
+.feedbacklist-content p strong {
+  color: #2c3e50;
+}
+
+.feedbacklist-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.feedbacklist-bookmark-btn,
+.feedbacklist-delete-btn {
+  padding: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  width: 120px; /* Fixed width for equal size */
+  text-align: center;
+  transition: background 0.3s ease;
+}
+
+.feedbacklist-bookmark-btn {
+  background: #f1c40f;
+  color: #fff;
+}
+
+.feedbacklist-bookmark-btn:hover {
+  background: #d4ac0d;
+}
+
+.feedbacklist-delete-btn {
+  background: #e74c3c;
+  color: #fff;
+}
+
+.feedbacklist-delete-btn:hover {
+  background: #c0392b;
+}
+
+/* Confirmation Dialog Styles */
+.feedbacklist-confirm-dialog {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  border: 1px solid #ddd;
+  animation: feedbacklist-fadeInScale 0.3s ease-out;
+}
+
+.feedbacklist-confirm-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 12px;
+}
+
+.feedbacklist-confirm-message {
+  font-size: 1rem;
+  color: #4a5568;
+  margin: 0 0 20px;
+}
+
+.feedbacklist-confirm-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.feedbacklist-confirm-btn {
+  padding: 8px 24px;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 100px;
+}
+
+.feedbacklist-confirm-cancel {
+  background: #f0f4f8;
+  color: #2c3e50;
+  border: 1px solid #ddd;
+}
+
+.feedbacklist-confirm-cancel:hover {
+  background: #e2e8f0;
+  transform: translateY(-2px);
+}
+
+.feedbacklist-confirm-delete {
+  background: #e74c3c;
+  color: #fff;
+  border: none;
+}
+
+.feedbacklist-confirm-delete:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+}
+
+/* Animation for Dialog */
+@keyframes feedbacklist-fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Responsive Adjustments */
+@media (min-width: 600px) {
+  .feedbacklist-item {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .feedbacklist-content {
+    flex: 1;
+  }
+
+  .feedbacklist-actions {
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .feedbacklist-bookmark-btn,
+  .feedbacklist-delete-btn {
+    width: 120px; /* Consistent width on desktop */
+  }
+}

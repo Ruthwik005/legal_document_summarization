@@ -1,0 +1,543 @@
+/* .signin-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #072441, #16406a);
+    padding: 20px;
+}
+
+.signin-form-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.signin-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.signin-subtitle {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.signin-link {
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signin-link:hover {
+    text-decoration: underline;
+}
+
+.signin-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.signin-form-group {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 5px;
+    max-width: 350px;
+}
+
+.signin-label {
+    align-self: flex-start;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.signin-input {
+    width: 100%;
+    max-width: 350px;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #2c3e50;
+    border-radius: 8px;
+    transition: 0.3s;
+    text-align: left;
+    font-size: 16px;
+}
+
+.signin-input:focus {
+    border-color: #6088b0;
+    outline: none;
+    box-shadow: 0 0 5px rgba(84, 50, 16, 0.3);
+}
+
+.signin-input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 350px;
+}
+
+.signin-eye-icon {
+    position: absolute;
+    right: 0px;
+    top: 53%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #2c3e50;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.signin-submit-btn {
+    width: 90%;
+    max-width: 300px;
+    background: #2c3e50;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.signin-submit-btn:hover:not(:disabled) {
+    background: #3a6a99;
+}
+
+.signin-submit-btn:disabled {
+    opacity: 0.8;
+}
+
+.signin-loading-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.signin-loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.signin-social-btn {
+    width: 90%;
+    max-width: 300px;
+    background: white;
+    color: #4b8fd3;
+    padding: 12px;
+    border: 1px solid #376a9d;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px auto;
+}
+
+.signin-social-btn:hover {
+    background: #f5f5f5;
+}
+
+.signin-google-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.signin-forgot-password {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+.signin-forgot-password .signin-link {
+    color: #0e345b;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.signin-forgot-password .signin-link:hover {
+    color: #2c3e50;
+}
+
+.signin-error {
+    color: red;
+    font-size: 14px;
+    margin-top: 2px;
+    margin-bottom: 0;
+}
+
+.offline-banner {
+    position: fixed;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(231, 76, 60, 0.9); 
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid #c0392b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 90%;
+    width: 400px;
+    animation: fadeSlideIn 0.4s緩出;
+  }
+  
+
+  .offline-banner-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 15px;
+    line-height: 1;
+    transition: color 0.2s ease;
+  }
+  
+  .offline-banner-close:hover {
+    color: #f1c1c1; 
+  }
+  
+  @keyframes fadeSlideIn {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -30px);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+  } */
+
+
+
+
+.signin-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #072441, #16406a);
+    padding: 20px;
+}
+
+.signin-form-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.signin-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.signin-subtitle {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.signin-link {
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.signin-link:hover {
+    text-decoration: underline;
+}
+
+.signin-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.signin-form-group {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 5px;
+    max-width: 350px;
+}
+
+.signin-label {
+    align-self: flex-start;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.signin-input {
+    width: 100%;
+    max-width: 350px;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #2c3e50;
+    border-radius: 8px;
+    transition: 0.3s;
+    text-align: left;
+    font-size: 16px;
+}
+
+.signin-input:focus {
+    border-color: #6088b0;
+    outline: none;
+    box-shadow: 0 0 5px rgba(84, 50, 16, 0.3);
+}
+
+.signin-input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 350px;
+}
+
+.signin-eye-icon {
+    position: absolute;
+    right: 0px;
+    top: 53%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #2c3e50;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 10px;
+}
+
+.signin-submit-btn {
+    width: 90%;
+    max-width: 300px;
+    background: #2c3e50;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.3s;
+}
+
+.signin-submit-btn:hover:not(:disabled) {
+    background: #3a6a99;
+}
+
+.signin-submit-btn:disabled {
+    opacity: 0.8;
+}
+
+.signin-loading-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.signin-loading-spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.signin-social-btn {
+    width: 90%;
+    max-width: 300px;
+    background: white;
+    color: #4b8fd3;
+    padding: 12px;
+    border: 1px solid #376a9d;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px auto;
+}
+
+.signin-social-btn:hover {
+    background: #f5f5f5;
+}
+
+.signin-google-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.signin-forgot-password {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+}
+
+.signin-forgot-password .signin-link {
+    color: #0e345b;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.signin-forgot-password .signin-link:hover {
+    color: #2c3e50;
+}
+
+.signin-error {
+    color: red;
+    font-size: 14px;
+    margin-top: 2px;
+    margin-bottom: 0;
+}
+
+/* Custom Offline Banner */
+.offline-banner {
+    position: fixed;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(231, 76, 60, 0.9); /* Semi-transparent red */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: 1px solid #c0392b;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 90%;
+    width: 400px;
+    animation: fadeSlideIn 0.4s ease-out;
+}
+
+/* Close Button */
+.offline-banner-close {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-left: 15px;
+    line-height: 1;
+    transition: color 0.2s ease;
+}
+
+.offline-banner-close:hover {
+    color: #f1c1c1; /* Lighter red on hover */
+}
+
+/* Animation for banner appearance */
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -30px);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+}
+
+/* React Toastify Custom Styles */
+.Toastify__toast {
+    background: #2c3e50; /* Dark blue to match theme */
+    color: #ffffff; /* White text for readability */
+    border-radius: 8px; /* Match form's border-radius */
+    font-size: 14px;
+}
+
+.Toastify__toast--error {
+    background: #c0392b; /* Red to match offline banner */
+    color: #ffffff;
+}
+
+.Toastify__toast--success {
+    background: #3a6a99; /* Lighter blue for success */
+    color: #ffffff;
+}
+
+.Toastify__toast--info {
+    background: #6088b0; /* Light blue for info */
+    color: #ffffff;
+}
+
+.Toastify__toast--warning {
+    background: #c0392b; /* Softer orange for warning */
+    color: #ffffff; /* White text for readability */
+}
+
+.Toastify__close-button {
+    color: #ffffff; /* White close button */
+    opacity: 0.8;
+}
+
+.Toastify__close-button:hover {
+    color: #f1c1c1; /* Lighter shade on hover */
+}
+
+.Toastify__progress-bar {
+    background: #6088b0; /* Light blue to match input focus */
+}

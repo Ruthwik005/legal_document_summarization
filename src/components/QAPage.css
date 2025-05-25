@@ -1,0 +1,520 @@
+/* Base Styles */
+.qna-main-page {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  background: #0A1A2F;
+  padding: 64px 16px 32px; /* Increased top padding for back button */
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #E0E7FF;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative; /* Context for back button */
+}
+
+.qna-file-upload-section {
+  width: 100%;
+  max-width: clamp(500px, 90vw, 800px);
+  padding: 0 8px;
+  box-sizing: border-box;
+}
+
+/* Back Button */
+.qna-back-btn {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: #26A69A;
+  color: #FFF;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  z-index: 20;
+  transition: all 0.2s ease;
+}
+
+.qna-back-btn:hover {
+  background: #2CB7A8;
+  transform: translateY(-2px);
+}
+
+.qna-back-icon {
+  font-size: 20px;
+}
+
+/* Upload Box */
+.qna-file-upload-box {
+  background: #1E2A44;
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 300px;
+  opacity: 0;
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+.qna-file-upload-box h3 {
+  font-size: clamp(22px, 5vw, 26px);
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #E0E7FF;
+  opacity: 0;
+  animation: slideIn 0.5s ease-out forwards;
+}
+
+.qna-file-upload-box p {
+  font-size: clamp(14px, 3vw, 16px);
+  color: #A5B4FC;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: slideIn 0.5s ease-out 0.1s forwards;
+}
+
+/* Upload Area */
+.qna-upload-area {
+  border: 2px dashed #4B5EAA;
+  border-radius: 12px;
+  padding: clamp(20px, 4vw, 28px);
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.3s ease;
+  position: relative;
+  opacity: 0;
+  animation: slideIn 0.5s ease-out 0.2s forwards;
+  width: 100%;
+  max-width: 550px;
+  box-sizing: border-box;
+}
+
+.qna-upload-area.dragging {
+  border-color: #26A69A;
+  background: rgba(38, 166, 154, 0.1);
+  transform: translateY(-4px);
+}
+
+.qna-upload-area.processing {
+  border-color: #FF6F61;
+  background: rgba(255, 111, 97, 0.1);
+}
+
+.qna-upload-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.qna-upload-icon {
+  font-size: 36px;
+  color: #A5B4FC;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.qna-upload-area.dragging .qna-upload-icon {
+  color: #26A69A;
+  transform: scale(1.1);
+}
+
+.qna-upload-prompt p {
+  font-size: 16px;
+  color: #E0E7FF;
+  margin: 0;
+}
+
+.qna-upload-prompt small {
+  font-size: 12px;
+  color: #A5B4FC;
+}
+
+/* File Preview */
+.qna-file-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  width: 100%;
+  max-width: 550px;
+  box-sizing: border-box;
+}
+
+.qna-file-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.qna-file-icon {
+  font-size: 20px;
+  color: #26A69A;
+}
+
+.qna-file-name {
+  font-size: 14px;
+  color: #E0E7FF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Buttons */
+.qna-remove-file {
+  background: none;
+  border: none;
+  color: #A5B4FC;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.qna-remove-file:hover {
+  color: #FF6F61;
+  background: rgba(255, 111, 97, 0.2);
+}
+
+.qna-upload-btn {
+  background: #26A69A;
+  color: #FFF;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.3s ease;
+}
+
+.qna-upload-btn:hover {
+  background: #2CB7A8;
+  transform: translateY(-2px);
+}
+
+.qna-btn-icon-wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.qna-btn-icon {
+  font-size: 16px;
+}
+
+.qna-file-types {
+  font-size: 12px;
+  color: #A5B4FC;
+  margin-top: 12px;
+}
+
+/* Q&A Section */
+.qna-section {
+  background: #1E2A44;
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 24px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+.qna-heading {
+  font-size: 18px;
+  font-weight: 600;
+  color: #E0E7FF;
+  margin-bottom: 16px;
+  opacity: 0;
+  animation: slideIn 0.5s ease-out 0.2s forwards;
+}
+
+.qna-placeholder {
+  font-size: 14px;
+  color: #A5B4FC;
+  text-align: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: slideIn 0.5s ease-out 0.3s forwards;
+}
+
+.qna-history {
+  margin-bottom: 16px;
+}
+
+.qna-entry {
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.qna-question {
+  background: #26A69A;
+  color: #FFF;
+  padding: 8px 12px;
+  border-radius: 16px 16px 16px 4px;
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 85%; /* Increased from 75% */
+  align-self: flex-start;
+  opacity: 0;
+  animation: slideIn 0.5s ease-out 0.3s forwards;
+  word-break: break-word; /* Ensure text wraps */
+  overflow-wrap: anywhere; /* Handle long words */
+  overflow: hidden; /* Prevent overflow */
+}
+
+.qna-answer-card {
+  background: #FF6F61;
+  color: #FFF;
+  padding: 8px 12px;
+  border-radius: 4px 16px 16px 16px;
+  max-width: 85%; /* Increased from 75% */
+  align-self: flex-end;
+  opacity: 0;
+  animation: slideIn 0.5s ease-out 0.4s forwards;
+  word-break: break-word; /* Ensure text wraps */
+  overflow-wrap: anywhere; /* Handle long words */
+  overflow: hidden; /* Prevent overflow */
+}
+
+.qna-answer-card.irrelevant {
+  background: #4B5EAA;
+}
+
+.qna-answer {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.qna-relevant-sections {
+  margin-top: 8px;
+}
+
+.qna-h5 {
+  font-size: 12px;
+  color: #E0E7FF;
+  margin-bottom: 6px;
+}
+
+.qna-section-card {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 8px;
+  margin: 8px 0;
+  border-radius: 8px;
+  opacity: 0;
+  animation: slideIn 0.5s ease-out 0.5s forwards;
+}
+
+.qna-section-card small {
+  font-size: 12px;
+  color: #A5B4FC;
+  display: block;
+  margin-top: 8px;
+}
+
+.qna-paragraph {
+  font-size: 12px;
+  color: #E0E7FF;
+}
+
+/* Input Area */
+.qna-input-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  padding: 8px;
+  margin-top: 16px;
+  opacity: 0;
+  animation: slideIn 0.5s ease-out 0.6s forwards;
+}
+
+.qna-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #E0E7FF;
+  font-size: 14px;
+  padding: 8px 12px;
+  outline: none;
+  transition: all 0.2s ease;
+  resize: none;
+  min-height: 24px;
+  max-height: 120px;
+  line-height: 1.5;
+  overflow-y: auto;
+}
+
+.qna-input:focus {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 8px rgba(38, 166, 154, 0.3);
+}
+
+.qna-input::placeholder {
+  color: #A5B4FC;
+  opacity: 0.8;
+}
+
+.qna-send-btn {
+  background: #26A69A;
+  color: #FFF;
+  border: none;
+  border-radius: 8px;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  transition: all 0.2s ease;
+}
+
+.qna-send-btn:hover:not(:disabled) {
+  background: #2CB7A8;
+  box-shadow: 0 4px 12px rgba(38, 166, 154, 0.4);
+}
+
+.qna-send-btn:disabled {
+  background: #4B5EAA;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Animations */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .qna-file-upload-box,
+  .qna-upload-area,
+  .qna-heading,
+  .qna-question,
+  .qna-answer-card,
+  .qna-section-card,
+  .qna-input-bar,
+  .qna-placeholder,
+  .qna-upload-btn,
+  .qna-remove-file,
+  .qna-send-btn {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .qna-file-upload-box {
+    padding: 16px;
+  }
+  .qna-upload-area,
+  .qna-file-preview {
+    max-width: 100%;
+  }
+  .qna-section {
+    max-width: clamp(500px, 95vw, 800px);
+  }
+  .qna-question,
+  .qna-answer-card {
+    max-width: 95%; /* Increased from 90% */
+  }
+  .qna-input {
+    font-size: 13px;
+  }
+  .qna-send-btn {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .qna-file-upload-box h3 {
+    font-size: 20px;
+  }
+  .qna-upload-icon {
+    font-size: 28px;
+  }
+  .qna-heading {
+    font-size: 16px;
+  }
+  .qna-answer,
+  .qna-paragraph {
+    font-size: 13px;
+  }
+  .qna-input-bar {
+    padding: 6px;
+  }
+}
+
+@media (max-width: 375px) {
+  .qna-main-page {
+    padding: 56px 12px 24px; /* Adjusted padding */
+  }
+  .qna-file-upload-box {
+    padding: 12px;
+    min-height: 250px;
+  }
+  .qna-file-upload-box h3 {
+    font-size: 18px;
+  }
+  .qna-upload-area {
+    padding: 16px;
+    max-width: 100%;
+  }
+  .qna-upload-icon {
+    font-size: 24px;
+  }
+  .qna-upload-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  .qna-section {
+    padding: 16px;
+  }
+  .qna-heading {
+    font-size: 15px;
+  }
+  .qna-question,
+  .qna-answer-card {
+    max-width: 95%; /* Increased for small screens */
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+  .qna-input {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+  .qna-send-btn {
+    width: 30px;
+    height: 30px;
+  }
+  .qna-answer,
+  .qna-paragraph {
+    font-size: 12px;
+  }
+}

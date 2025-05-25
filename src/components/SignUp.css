@@ -1,0 +1,247 @@
+/* SignUp.css */
+.signup-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: linear-gradient(to right, #072441, #16406a);
+    padding: 20px;
+  }
+  
+  .signup-form-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.15);
+    width: 100%;
+    max-width: 400px;
+  }
+  
+  .signup-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .signup-subtitle {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+  .signup-link {
+    color: #2c3e50;
+    text-decoration: none;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .signup-link:hover {
+    text-decoration: underline;
+  }
+  
+  .signup-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .signup-form-group {
+    margin-bottom: 15px;
+  }
+  
+  .signup-label {
+    display: block;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 5px;
+    font-size: 14px;
+  }
+  
+  .signup-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+  }
+  
+  .signup-input:focus {
+    border-color: #2c3e50;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+    background-color: white;
+  }
+  
+  .signup-input-wrapper {
+    position: relative;
+  }
+  
+  .signup-eye-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #7f8c8d;
+  }
+  
+  .signup-error {
+    color: #e74c3c;
+    font-size: 12px;
+    margin-top: 5px;
+  }
+  
+  .signup-password-strength {
+    font-size: 12px;
+    margin-top: 5px;
+    color: #27ae60;
+  }
+  
+  .signup-submit-btn {
+    width: 100%;
+    background: #2c3e50;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+  }
+  
+  .signup-submit-btn:hover:not(:disabled) {
+    background: #1a2a3a;
+  }
+  
+  .signup-submit-btn:disabled {
+    opacity: 0.8;
+    cursor: not-allowed;
+  }
+  
+  .signup-button-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .signup-circular-loader {
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .signup-social-btn {
+    width: 100%;
+    background: white;
+    color: #2c3e50;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 15px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+  }
+  
+  .signup-social-btn:hover {
+    background: #f5f5f5;
+  }
+  
+  .signup-google-btn svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .signup-terms {
+    font-size: 12px;
+    color: #7f8c8d;
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .Toastify__toast {
+    font-size: 14px;
+    border-radius: 8px;
+  }
+  
+  .Toastify__toast--success {
+    background: #dce4df;
+  }
+  
+  .Toastify__toast--error {
+    background: #eae4e4;
+  }
+/* Custom Offline Banner */
+.offline-banner {
+  position: fixed;
+  top: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(231, 76, 60, 0.9); /* Semi-transparent red */
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: 1px solid #c0392b;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1000;
+  display: flex;
+justify-content: space-between;
+  align-items: center;
+  max-width: 90%;
+  width: 400px;
+  animation: fadeSlideIn 0.4s ease-out;
+}
+
+/* Close Button */
+.offline-banner-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-left: 15px;
+  line-height: 1;
+  transition: color 0.2s ease;
+}
+
+.offline-banner-close:hover {
+  color: #f1c1c1; /* Lighter red on hover */
+}
+
+/* Animation for banner appearance */
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -30px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

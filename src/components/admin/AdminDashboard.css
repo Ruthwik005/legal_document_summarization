@@ -1,0 +1,214 @@
+/* AdminDashboard.css */
+.admindashboard {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Arial', sans-serif;
+}
+
+.admindashboard-header {
+  background-color: #2d3748;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.admindashboard-header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+}
+
+.admindashboard-header-content h1 {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.admindashboard-logout-btn {
+  background-color: #e53e3e;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.admindashboard-logout-btn:hover {
+  background-color: #c53030;
+}
+
+.admindashboard-content {
+  background-color: #f7fafc;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admindashboard-stats-card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admindashboard-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.admindashboard-card-header h2 {
+  font-size: 20px;
+  color: #2d3748;
+}
+
+.admindashboard-chart-toggle {
+  display: flex;
+  gap: 10px;
+}
+
+.admindashboard-chart-toggle button {
+  padding: 8px 16px;
+  border: 1px solid #e2e8f0;
+  background-color: #edf2f7;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.admindashboard-chart-toggle button.active,
+.admindashboard-chart-toggle button:hover {
+  background-color: #4a5568;
+  color: white;
+}
+
+.admindashboard-date-controls {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.admindashboard-date-input {
+  display: flex;
+  flex-direction: column;
+}
+
+.admindashboard-date-input label {
+  font-size: 14px;
+  color: #4a5568;
+  margin-bottom: 5px;
+}
+
+.admindashboard-date-input input {
+  padding: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.admindashboard-refresh-btn {
+  padding: 8px 16px;
+  background-color: #4a5568;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  align-self: flex-end;
+}
+
+.admindashboard-refresh-btn:hover {
+  background-color: #2d3748;
+}
+
+.admindashboard-refresh-btn:disabled {
+  background-color: #a0aec0;
+  cursor: not-allowed;
+}
+
+.admindashboard-chart-container {
+  height: 300px;
+  margin-bottom: 20px;
+}
+
+.admindashboard-user-stats h3 {
+  font-size: 18px;
+  color: #2d3748;
+  margin-bottom: 15px;
+}
+
+.table-container {
+  max-height: 400px;
+  overflow-y: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.admindashboard-user-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.admindashboard-user-table th,
+.admindashboard-user-table td {
+  padding: 12px;
+  text-align: left;
+  font-size: 14px;
+  color: #000000;
+}
+
+.admindashboard-user-table th {
+  background-color: #4a5568;
+  color: white;
+  font-weight: bold;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.admindashboard-user-table tbody tr:nth-child(even) {
+  background-color: #f7fafc;
+}
+
+.admindashboard-user-table tbody tr:hover {
+  background-color: #edf2f7;
+  transition: background-color 0.2s;
+}
+
+.admindashboard-user-table td {
+  border-bottom: 1px solid #e2e8f0;
+  color:#000000;
+}
+
+.admindashboard-no-data {
+  text-align: center;
+  padding: 20px;
+  color: #718096;
+  font-size: 16px;
+}
+
+.admindashboard-filter-mode {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 10px;
+}
+
+.admindashboard-filter-mode label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+.admindashboard-date-range {
+  display: flex;
+  gap: 20px;
+}
