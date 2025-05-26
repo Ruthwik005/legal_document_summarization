@@ -1,23 +1,18 @@
---only-binary :all:
---find-links https://download.pytorch.org/whl/torch_stable.html
-
+--find-links https://download.pytorch.org/whl/cpu
+--no-cache-dir
 Flask==3.0.3
 Flask-Cors==4.0.0
 gunicorn==22.0.0
 python-dotenv==1.1.0
-pymongo==4.10.1
-nltk==3.9.1
-numpy==1.26.4
-pandas==2.2.1
 PyPDF2==3.0.1
 python-docx==1.1.2
-sentence-transformers==4.0.2
+nltk==3.9.1
+numpy==1.26.4
 transformers==4.47.0
 torch==2.5.1
-scikit-learn==1.6.1
 spacy==3.8.4
 langchain==0.3.23
 langchain-community==0.3.21
-langchain-core==0.3.51
-faiss-cpu==1.7.4  # Required for langchain vectorstores
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.8.0/en_core_web_sm-3.8.0-py3-none-any.whl
+langchain-huggingface==0.1.2
+faiss-cpu==1.7.4
+accelerate==0.30.0
