@@ -102,7 +102,7 @@
 }
 
 .summary-upload-area.complete {
-  border-color: #FF6F61;
+  border-color: #26A69A;
   background: rgba(255, 111, 97, 0.1);
 }
 
@@ -199,7 +199,7 @@
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  background: #FF6F61;
+  background: #26A69A;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -368,8 +368,11 @@
 }
 
 .summary-completion-badge {
-  background: rgba(255, 111, 97, 0.2);
-  color: #FF6F61;
+  background-color: transparent;
+  border-color:#26A69A;
+  border-style:dashed;
+  border-width:2px;
+  color: #26A69A;
   padding: 6px 12px;
   border-radius: 12px;
   font-size: 12px;
@@ -398,7 +401,7 @@
 }
 
 .summary-download-btn {
-  background: #FF6F61;
+  background: #26A69A;
   color: #FFF;
 }
 
@@ -408,7 +411,7 @@
 }
 
 .summary-download-btn:hover:not(:disabled) {
-  background: #FF8578;
+  background: #26A69A;
   transform: translateY(-2px);
 }
 
@@ -562,7 +565,7 @@
 }
 
 .summary-qa-answer-card {
-  background: #FF6F61;
+  background: #4b4d9c;
   color: #FFF;
   padding: 8px 12px;
   border-radius: 4px 16px 16px 16px;
@@ -877,4 +880,53 @@
     padding: 8px 10px;
     font-size: 13px;
   }
+}
+
+/* Model loading indicator */
+.model-loading-indicator {
+  background: rgba(255, 193, 7, 0.15);
+  border-left: 4px solid #FFC107;
+  padding: 12px;
+  margin: 20px auto;
+  max-width: 600px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #FFC107;
+}
+
+.model-error-indicator {
+  background: rgba(244, 67, 54, 0.15);
+  border-left: 4px solid #F44336;
+  padding: 12px;
+  margin: 20px auto;
+  max-width: 600px;
+  border-radius: 4px;
+  color: #F44336;
+}
+
+.loading-spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 193, 7, 0.3);
+  border-radius: 50%;
+  border-top-color: #FFC107;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Disabled states */
+.summary-generate-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background: #e0e0e0;
+}
+
+.summary-generate-btn:disabled:hover {
+  transform: none !important;
+  box-shadow: none !important;
 }
