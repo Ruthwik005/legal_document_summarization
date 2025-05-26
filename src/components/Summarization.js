@@ -15,15 +15,18 @@ function Summarization() {
   const [question, setQuestion] = useState('');
   const [qaHistory, setQaHistory] = useState([]);
   const [error, setError] = useState(null);
-  const [apiStatus, setApiStatus] = useState(null);
+  const [apiStatus, setApiStatus] = useState({ status: 'checking' });
   const [language, setLanguage] = useState('english');
   const [isTranslating, setIsTranslating] = useState(false);
   const [translatedText, setTranslatedText] = useState('');
   const [showCopyNotification, setShowCopyNotification] = useState(false);
   const [showDownloadNotification, setShowDownloadNotification] = useState(false);
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   const navigate = useNavigate();
+
+  const sparkleColors = ['#26A69A', '#FF6F61', '#FFD54F', '#4FC3F7', '#AB47BC'];
 
   const languageOptions = [
     { value: 'english', label: 'English', flag: '🇬🇧', code: 'en' },
@@ -71,18 +74,28 @@ function Summarization() {
     }
   }, [summaryText, qaHistory]);
 
-  useEffect(() => {
-    const checkApiHealth = async () => {
-      try {
-        const response = await fetch('http://localhost:5000/health');
-        const data = await response.json();
-        setApiStatus(data);
-      } catch (err) {
-        setApiStatus({ status: 'unreachable' });
+  const checkApiHealth = useCallback(async () => {
+    try {
+      const response = await fetch('http://localhost:5000/health');
+      const data = await response.json();
+      setApiStatus(data);
+      
+      if (data.status === 'loading') {
+        setTimeout(() => {
+          setRetryCount(prev => prev + 1);
+        }, 3000);
       }
-    };
-    checkApiHealth();
+    } catch (err) {
+      setApiStatus({ status: 'unreachable' });
+      setTimeout(() => {
+        setRetryCount(prev => prev + 1);
+      }, 5000);
+    }
   }, []);
+
+  useEffect(() => {
+    checkApiHealth();
+  }, [checkApiHealth, retryCount]);
 
   const handleFileChange = useCallback((file) => {
     if (file) {
@@ -150,20 +163,30 @@ function Summarization() {
         body: formData,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to generate summary');
+      if (response.status === 503) {
+        const data = await response.json();
+        throw new Error(data.message || 'Model is still loading. Please try again in a few seconds.');
       }
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to generate summary');
+      }
+
+      const data = await response.json();
       const newSummary = data.summary || 'No summary content available';
       setSummaryText(newSummary);
       setIsComplete(true);
     } catch (err) {
-      setError(err.message || 'Unknown error occurred');
-      setSummaryText('');
-    } finally {
-      setIsGenerating(false);
+      setError(err.message);
+      if (err.message.includes('try again')) {
+        setTimeout(() => {
+          handleGenerate();
+        }, 5000);
+      } else {
+        setSummaryText('');
+        setIsGenerating(false);
+      }
     }
   };
 
@@ -320,7 +343,36 @@ function Summarization() {
     }
   };
 
-  const sparkleColors = ['#26A69A', '#FF6F61', '#FFD54F', '#4FC3F7', '#AB47BC'];
+  const ModelStatusIndicator = () => {
+    if (apiStatus.status === 'loading') {
+      return (
+        <motion.div 
+          className="model-loading-indicator"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          <div className="loading-spinner"></div>
+          <span>AI Model is warming up... {apiStatus.progress || ''}</span>
+        </motion.div>
+      );
+    }
+    
+    if (apiStatus.status === 'unreachable') {
+      return (
+        <motion.div 
+          className="model-error-indicator"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+        >
+          ⚠ Backend service unavailable. Please make sure the API server is running.
+        </motion.div>
+      );
+    }
+    
+    return null;
+  };
 
   return (
     <div className="summary-mainPage">
@@ -335,16 +387,7 @@ function Summarization() {
         <FiArrowLeft className="summary-back-icon" />
       </motion.button>
 
-      {apiStatus && apiStatus.status === 'unreachable' && (
-        <motion.div
-          className="summary-api-warning"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          ⚠ The API server is unreachable. Please make sure the backend service is running.
-        </motion.div>
-      )}
+      <ModelStatusIndicator />
 
       <div className="summary-file-upload-section">
         <motion.div
@@ -454,20 +497,21 @@ function Summarization() {
               <motion.button
                 className="summary-generate-btn"
                 onClick={handleGenerate}
-                disabled={isGenerating}
+                disabled={isGenerating || apiStatus.status !== 'ready'}
+                title={apiStatus.status !== 'ready' ? 'Waiting for model to load' : 'Analyze document'}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
                 whileHover={
-                  !isGenerating
+                  !isGenerating && apiStatus.status === 'ready'
                     ? {
                         scale: 1.05,
                         boxShadow: '0 8px 24px rgba(38, 166, 154, 0.6)',
                       }
                     : {}
                 }
-                whileTap={!isGenerating ? { scale: 0.95 } : {}}
+                whileTap={!isGenerating && apiStatus.status === 'ready' ? { scale: 0.95 } : {}}
                 onHoverStart={() => setButtonHover(true)}
                 onHoverEnd={() => setButtonHover(false)}
                 aria-label="Analyze document now"
@@ -503,7 +547,7 @@ function Summarization() {
                   <>
                     <motion.div
                       animate={{
-                        scale: buttonHover ? 1.2 : 1,
+                        scale: buttonHover && apiStatus.status === 'ready' ? 1.2 : 1,
                       }}
                       transition={{
                         duration: 0.3,
@@ -512,7 +556,9 @@ function Summarization() {
                     >
                       <FiZap className="summary-btn-icon" />
                     </motion.div>
-                    <span>Analyze Now</span>
+                    <span>
+                      {apiStatus.status === 'ready' ? 'Analyze Now' : 'Preparing AI...'}
+                    </span>
                   </>
                 )}
               </motion.button>
