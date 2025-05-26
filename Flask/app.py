@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
-from transformers import pipeline, AutoTokenizer
+from transformers import pipeline, AutoTokenizer, T5ForConditionalGeneration
 import torch
 import os
 from werkzeug.utils import secure_filename
@@ -15,17 +15,15 @@ import shutil
 import traceback
 import random
 from functools import lru_cache, wraps
-from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_community.document_loaders import TextLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
-from langchain_community.embeddings import HuggingFaceEmbeddings
-
 import requests
 from datetime import datetime, timedelta
 from werkzeug.exceptions import HTTPException
-embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+from threading import Thread
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -47,7 +45,7 @@ DEFAULT_MIN_LENGTH = 100
 # Configuration for file handling
 ALLOWED_EXTENSIONS = {'pdf', 'doc', 'docx', 'txt'}
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'Uploads')
 PREPROCESSED_FOLDER = os.path.join(BASE_DIR, 'preprocessed')
 PROCESSED_FOLDER = os.path.join(BASE_DIR, 'processed')
 
@@ -641,30 +639,68 @@ IRRELEVANT_RESPONSES = [
     "I can only answer questions about the legal judgment document."
 ]
 
-# Initialize the summarization model
+# Model state tracking
 summarizer = None
 tokenizer = None
 model = None
+model_loaded = False
+model_loading = False
 
-try:
-    logger.info("⏳ Loading summarization model...")
-    device = -1  # Always use CPU
-    logger.info("Using device: CPU")
+# Embeddings initialization
+embeddings = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2",
+    model_kwargs={'device': 'cpu'},
+    encode_kwargs={
+        'normalize_embeddings': True,
+        'batch_size': 2  # Reduced for memory efficiency
+    }
+)
+
+def load_model_in_background():
+    """Background thread to load the model without blocking startup"""
+    global summarizer, tokenizer, model, model_loaded, model_loading
     
-    # tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    tokenizer =MODEL_NAME
-    # model = T5ForConditionalGeneration.from_pretrained(MODEL_NAME)
-    model = MODEL_NAME
-    summarizer = pipeline(
-        "summarization",
-        model=model,
-        tokenizer=tokenizer,
-        device=device
-    )
-    logger.info("✅ Model loaded successfully!")
-except Exception as e:
-    logger.error(f"❌ Failed to load model: {str(e)}\n{traceback.format_exc()}")
-    raise
+    if not model_loaded and not model_loading:
+        model_loading = True
+        try:
+            logger.info("🚀 Starting background model load...")
+            
+            start_time = time.time()
+            tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
+            model = T5ForConditionalGeneration.from_pretrained(MODEL_NAME)
+            
+            summarizer = pipeline(
+                "summarization",
+                model=model,
+                tokenizer=tokenizer,
+                device=-1,  # CPU
+                torch_dtype="auto" if torch.cuda.is_available() else None
+            )
+            
+            model_loaded = True
+            logger.info(f"✅ Model loaded in {time.time()-start_time:.2f}s")
+            
+        except Exception as e:
+            logger.error(f"Model loading failed: {str(e)}\n{traceback.format_exc()}")
+            model_loading = False
+            raise
+        finally:
+            model_loading = False
+
+# Start loading model in background when app starts
+Thread(target=load_model_in_background, daemon=True).start()
+
+def get_summarizer():
+    """Get the summarizer, waiting for it to load if necessary"""
+    global summarizer, model_loaded
+    if not model_loaded:
+        start_time = time.time()
+        while not model_loaded and time.time() - start_time < 30:  # 30s timeout
+            time.sleep(0.1)
+        
+        if not model_loaded:
+            raise RuntimeError("Model loading timed out after 30 seconds")
+    return summarizer
 
 # Initialize QA vector stores cache
 vectorstore_cache = {}
@@ -697,6 +733,7 @@ def chunk_text(text, chunk_size=CHUNK_SIZE):
 
 def summarize_chunk(chunk, max_length=DEFAULT_MAX_LENGTH, min_length=DEFAULT_MIN_LENGTH):
     try:
+        summarizer = get_summarizer()
         return summarizer(
             chunk,
             max_length=max_length,
@@ -836,11 +873,6 @@ def create_vector_store(text, filename):
         )
         chunks = text_splitter.split_documents(documents)
         
-        embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-mpnet-base-v2",
-            model_kwargs={'device': 'cpu'}
-        )
-        
         vectorstore = FAISS.from_documents(chunks, embeddings)
         return vectorstore, None
             
@@ -872,27 +904,38 @@ def format_answer(doc, score):
     content = doc.page_content
     return {
         "content": content,
-        "score":float(score)
-}
+        "score": float(score)
+    }
 
 @app.route('/health', methods=['GET'])
 def health_check():
     log_memory_usage()
     return jsonify({
-        "status": "healthy",
-        "model_loaded": summarizer is not None,
+        "status": "ready" if model_loaded else "loading",
+        "model_loaded": model_loaded,
+        "model_loading": model_loading,
         "device": "cpu",
         "chunk_size": CHUNK_SIZE,
         "default_max_length": DEFAULT_MAX_LENGTH,
-        "default_min_length": DEFAULT_MIN_LENGTH
+        "default_min_length": DEFAULT_MIN_LENGTH,
+        "memory_warning": "Model not loaded yet" if not model_loaded else "OK"
     })
+
+@app.route('/warmup', methods=['POST'])
+def warmup():
+    if not model_loading and not model_loaded:
+        Thread(target=load_model_in_background, daemon=True).start()
+        return jsonify({"status": "started"})
+    return jsonify({"status": "already_loading" if model_loading else "already_loaded"})
 
 @app.route('/summarize', methods=['POST'])
 def summarize():
-    if summarizer is None:
+    if not model_loaded:
+        if not model_loading:
+            Thread(target=load_model_in_background, daemon=True).start()
         return jsonify({
-            "error": "Model not loaded",
-            "summary": "",
+            "error": "Model is still loading",
+            "message": "Please try again in a few seconds",
             "status": "error"
         }), 503
     
@@ -1038,6 +1081,15 @@ def upload_document():
 
 @app.route('/ask', methods=['POST'])
 def ask_question():
+    if not model_loaded:
+        if not model_loading:
+            Thread(target=load_model_in_background, daemon=True).start()
+        return jsonify({
+            "error": "Model is still loading",
+            "message": "Please try again in a few seconds",
+            "status": "error"
+        }), 503
+        
     try:
         if 'file' not in request.files:
             return jsonify({
@@ -1110,6 +1162,7 @@ def ask_question():
             "details": str(e),
             "status": "error"
         }), 500
+
 app.config.from_mapping(
     MYMEMORY_URL='https://api.mymemory.translated.net/get',
     LIBRE_URL='https://libretranslate.de/translate',
@@ -1117,10 +1170,6 @@ app.config.from_mapping(
     CACHE_SIZE=1000,
     REQUEST_TIMEOUT=10  # seconds
 )
-
-# Set up logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 # Rate limiting storage
 request_timestamps = {}
@@ -1214,7 +1263,6 @@ def handle_exception(e):
         'message': str(e)
     }), 500
 
-
 @app.route('/translate', methods=['POST'])
 @rate_limited
 def translate_endpoint():
@@ -1251,16 +1299,6 @@ def translate_endpoint():
             'message': 'Both "text" and "lang" must be strings'
         }), 400
     
-    # SOLUTION 1: STRICT LENGTH CHECK (uncomment to use)
-    # if len(text) > MAX_LENGTH:
-    #     return jsonify({
-    #         'error': 'Text too long',
-    #         'message': f'Maximum allowed length is {MAX_LENGTH} characters',
-    #         'submitted_length': len(text),
-    #         'suggestion': 'Try splitting your text into smaller chunks'
-    #     }), 400
-
-    # SOLUTION 2: CHUNKED TRANSLATION (default implementation)
     def translate_in_chunks(text, lang, chunk_size=MAX_LENGTH):
         chunks = [text[i:i+chunk_size] for i in range(0, len(text), chunk_size)]
         translated_chunks = []
@@ -1303,6 +1341,7 @@ def translate_endpoint():
             'target_lang': lang,
             'original_length': len(text)
         }), 500
+
 @app.route('/healthy', methods=['GET'])
 def health_check_qa():
     return jsonify({
