@@ -1,0 +1,19 @@
+app = "flask-model2"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[[services]]
+  http_service = { internal_port = 8001 }
+  [services.http_service]
+    auto_stop_machines = false
+    auto_start_machines = true
+
+[env]
+  PORT = "8001"
+  ALLOWED_ORIGINS = "http://localhost:3000"
+
+[vm]
+  size = "shared-cpu-1x"
+  memory = "1gb"
