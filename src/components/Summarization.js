@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { FiUpload, FiZap, FiX, FiCheck, FiFile, FiCopy, FiSend, FiDownload, FiChevronDown, FiEdit, FiArrowLeft } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,15 +16,12 @@ function Summarization() {
   const [question, setQuestion] = useState('');
   const [qaHistory, setQaHistory] = useState([]);
   const [error, setError] = useState(null);
-  const [apiStatus, setApiStatus] = useState({ status: 'checking' });
   const [language, setLanguage] = useState('english');
   const [isTranslating, setIsTranslating] = useState(false);
   const [translatedText, setTranslatedText] = useState('');
   const [showCopyNotification, setShowCopyNotification] = useState(false);
   const [showDownloadNotification, setShowDownloadNotification] = useState(false);
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
-
   const navigate = useNavigate();
 
   const sparkleColors = ['#26A69A', '#FF6F61', '#FFD54F', '#4FC3F7', '#AB47BC'];
@@ -57,7 +55,7 @@ function Summarization() {
         }
       }
     } catch (e) {
-      setError('Failed to load saved summary or Q&A.');
+      setError('Failed to load saved summary.');
       localStorage.removeItem('summaryState');
     }
   }, []);
@@ -67,38 +65,18 @@ function Summarization() {
       return;
     }
     try {
-      const state = { summaryText, qaHistory };
-      localStorage.setItem('summaryState', JSON.stringify(state));
+      localStorage.setItem('summaryState', JSON.stringify({ summaryText, qaHistory }));
     } catch (e) {
-      setError('Failed to save summary or Q&A.');
+      setError('Failed to save summary.');
     }
   }, [summaryText, qaHistory]);
 
-  const checkApiHealth = useCallback(async () => {
-    try {
-      const response = await fetch('http://localhost:5000/health');
-      const data = await response.json();
-      setApiStatus(data);
-      
-      if (data.status === 'loading') {
-        setTimeout(() => {
-          setRetryCount(prev => prev + 1);
-        }, 3000);
-      }
-    } catch (err) {
-      setApiStatus({ status: 'unreachable' });
-      setTimeout(() => {
-        setRetryCount(prev => prev + 1);
-      }, 5000);
-    }
-  }, []);
-
-  useEffect(() => {
-    checkApiHealth();
-  }, [checkApiHealth, retryCount]);
-
   const handleFileChange = useCallback((file) => {
     if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        setError('File size exceeds 5MB. Processing may be slow due to API limits.');
+        return;
+      }
       setSelectedFile(file);
       setError(null);
     }
@@ -140,7 +118,7 @@ function Summarization() {
     setError(null);
   }, []);
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (retries = 3, delay = 5000) => {
     if (!selectedFile) {
       setError('Please upload a document.');
       return;
@@ -157,15 +135,15 @@ function Summarization() {
     try {
       const formData = new FormData();
       formData.append('file', selectedFile);
-
-      const response = await fetch('http://localhost:5000/summarize', {
+      const response = await fetch('http://localhost:8000/summarize', {
         method: 'POST',
         body: formData,
       });
 
-      if (response.status === 503) {
-        const data = await response.json();
-        throw new Error(data.message || 'Model is still loading. Please try again in a few seconds.');
+      if (response.status === 503 && retries > 0) {
+        setError(`Server is initializing. Retrying in ${delay/1000}s...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return handleGenerate(retries - 1, delay * 2);
       }
 
       if (!response.ok) {
@@ -178,15 +156,10 @@ function Summarization() {
       setSummaryText(newSummary);
       setIsComplete(true);
     } catch (err) {
-      setError(err.message);
-      if (err.message.includes('try again')) {
-        setTimeout(() => {
-          handleGenerate();
-        }, 5000);
-      } else {
-        setSummaryText('');
-        setIsGenerating(false);
-      }
+      setError(`Error generating summary: ${err.message}`);
+      setSummaryText('');
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -215,24 +188,18 @@ function Summarization() {
     setIsTranslating(true);
     try {
       const targetLang = languageOptions.find((l) => l.value === language)?.code || 'en';
-
-      const response = await fetch('http://localhost:5000/translate', {
+      const response = await fetch('http://localhost:8000/translate', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: summaryText,
-          lang: targetLang,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: summaryText, lang: targetLang }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || 'Translation failed');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Translation failed');
       }
 
+      const data = await response.json();
       setTranslatedText(data.translation || '');
     } catch (err) {
       setError('Translation failed: ' + err.message);
@@ -271,7 +238,7 @@ function Summarization() {
   };
 
   const handleBackClick = () => {
-    navigate('/ModelsPage'); 
+    navigate('/ModelsPage');
   };
 
   useEffect(() => {
@@ -282,7 +249,7 @@ function Summarization() {
     }
   }, [language, summaryText]);
 
-  const handleQuestionSubmit = async (e) => {
+  const handleQuestionSubmit = async (e, retries = 3, delay = 5000) => {
     if ((e.key === 'Enter' && !e.shiftKey && question.trim()) || e.type === 'click') {
       e.preventDefault();
 
@@ -291,12 +258,7 @@ function Summarization() {
         return;
       }
 
-      const newQaEntry = {
-        question: question,
-        answer: 'Processing...',
-        loading: true,
-        relevantSections: [],
-      };
+      const newQaEntry = { question, answer: '', loading: true, relevantSections: [] };
       setQaHistory((prev) => [...prev, newQaEntry]);
       setQuestion('');
 
@@ -304,11 +266,16 @@ function Summarization() {
         const formData = new FormData();
         formData.append('file', selectedFile);
         formData.append('question', question);
-
-        const response = await fetch('http://localhost:5000/ask', {
+        const response = await fetch('http://localhost:8001/ask', {
           method: 'POST',
           body: formData,
         });
+
+        if (response.status === 503 && retries > 0) {
+          setError(`Server is initializing. Retrying in ${delay/1000}s...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          return handleQuestionSubmit(e, retries - 1, delay * 2);
+        }
 
         if (!response.ok) {
           const errorData = await response.json();
@@ -316,11 +283,10 @@ function Summarization() {
         }
 
         const data = await response.json();
-
         setQaHistory((prev) => {
           const updatedHistory = [...prev];
           updatedHistory[updatedHistory.length - 1] = {
-            question: question,
+            question,
             answer: data.answer || 'No answer found',
             relevantSections: data.sections || [],
             loading: false,
@@ -328,54 +294,35 @@ function Summarization() {
           return updatedHistory;
         });
       } catch (err) {
+        setError(err.message);
         setQaHistory((prev) => {
           const updatedHistory = [...prev];
           updatedHistory[updatedHistory.length - 1] = {
-            question: question,
+            question,
             answer: `Error: ${err.message}`,
             loading: false,
             relevantSections: [],
           };
           return updatedHistory;
         });
-        setError(err.message);
       }
     }
   };
 
-  const ModelStatusIndicator = () => {
-    if (apiStatus.status === 'loading') {
-      return (
-        <motion.div 
-          className="model-loading-indicator"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          <div className="loading-spinner"></div>
-          <span>AI Model is warming up... {apiStatus.progress || ''}</span>
-        </motion.div>
-      );
-    }
-    
-    if (apiStatus.status === 'unreachable') {
-      return (
-        <motion.div 
-          className="model-error-indicator"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-        >
-          ⚠ Backend service unavailable. Please make sure the API server is running.
-        </motion.div>
-      );
-    }
-    
-    return null;
-  };
-
   return (
     <div className="summary-mainPage">
+      {error && (
+        <motion.div
+          className="notification error-notification"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 20 }}
+          transition={{ duration: 0.3 }}
+          onClick={() => setError(null)}
+        >
+          {error}
+        </motion.div>
+      )}
       <motion.button
         className="summary-back-btn"
         onClick={handleBackClick}
@@ -387,8 +334,6 @@ function Summarization() {
         <FiArrowLeft className="summary-back-icon" />
       </motion.button>
 
-      <ModelStatusIndicator />
-
       <div className="summary-file-upload-section">
         <motion.div
           className="summary-file-upload-box"
@@ -397,7 +342,7 @@ function Summarization() {
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
           <h3>Legal Document Summarizer</h3>
-          <p>Upload your document for AI-powered insights</p>
+          <p>Upload your document for AI-powered insights. Large files (>5MB) may cause delays due to API limits.</p>
 
           <div
             className={`summary-upload-area ${isDragging ? 'dragging' : ''} ${isComplete ? 'complete' : ''}`}
@@ -496,71 +441,27 @@ function Summarization() {
             {selectedFile && !isComplete && (
               <motion.button
                 className="summary-generate-btn"
-                onClick={handleGenerate}
-                disabled={isGenerating || apiStatus.status !== 'ready'}
-                title={apiStatus.status !== 'ready' ? 'Waiting for model to load' : 'Analyze document'}
+                onClick={() => handleGenerate()}
+                disabled={isGenerating}
+                title="Analyze document now"
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
-                whileHover={
-                  !isGenerating && apiStatus.status === 'ready'
-                    ? {
-                        scale: 1.05,
-                        boxShadow: '0 8px 24px rgba(38, 166, 154, 0.6)',
-                      }
-                    : {}
-                }
-                whileTap={!isGenerating && apiStatus.status === 'ready' ? { scale: 0.95 } : {}}
+                whileHover={!isGenerating ? { scale: 1.05, boxShadow: '0 8px 24px rgba(38, 166, 154, 0.6)' } : {}}
+                whileTap={!isGenerating ? { scale: 0.95 } : {}}
                 onHoverStart={() => setButtonHover(true)}
                 onHoverEnd={() => setButtonHover(false)}
-                aria-label="Analyze document now"
               >
-                {isGenerating ? (
-                  <>
-                    <div className="summary-sparkle-container">
-                      {[...Array(5)].map((_, i) => (
-                        <motion.span
-                          key={i}
-                          className="summary-sparkle"
-                          style={{
-                            backgroundColor: sparkleColors[i % sparkleColors.length],
-                          }}
-                          animate={{
-                            scale: [0.5, 1, 0.5],
-                            opacity: [0, 1, 0],
-                            x: (Math.random() - 0.5) * 20,
-                            y: (Math.random() - 0.5) * 20,
-                          }}
-                          transition={{
-                            duration: 1.2,
-                            repeat: Infinity,
-                            delay: i * 0.2,
-                            ease: 'easeInOut',
-                          }}
-                        />
-                      ))}
-                    </div>
-                    <span>Analyzing...</span>
-                  </>
-                ) : (
-                  <>
-                    <motion.div
-                      animate={{
-                        scale: buttonHover && apiStatus.status === 'ready' ? 1.2 : 1,
-                      }}
-                      transition={{
-                        duration: 0.3,
-                        ease: 'easeInOut',
-                      }}
-                    >
-                      <FiZap className="summary-btn-icon" />
-                    </motion.div>
-                    <span>
-                      {apiStatus.status === 'ready' ? 'Analyze Now' : 'Preparing AI...'}
-                    </span>
-                  </>
-                )}
+                <>
+                  <motion.div
+                    animate={{ scale: buttonHover ? 1.2 : 1 }}
+                    transition={{ duration: 0.3, ease: 'easeInOut' }}
+                  >
+                    <FiZap className="summary-btn-icon" />
+                  </motion.div>
+                  <span>Analyze Now</span>
+                </>
               </motion.button>
             )}
           </AnimatePresence>
@@ -582,11 +483,7 @@ function Summarization() {
                     <motion.div className="language-select-wrapper" whileHover={{ scale: (!isComplete || isGenerating) ? 1 : 1.03 }}>
                       <div
                         className={`language-select-trigger ${(!isComplete || isGenerating) ? 'disabled' : ''}`}
-                        onClick={() => {
-                          if (isComplete && !isGenerating) {
-                            setIsLanguageDropdownOpen(!isLanguageDropdownOpen);
-                          }
-                        }}
+                        onClick={() => { if (isComplete && !isGenerating) setIsLanguageDropdownOpen(!isLanguageDropdownOpen); }}
                         aria-disabled={!isComplete || isGenerating}
                         title={!isComplete || isGenerating ? 'Please wait until analysis is complete' : 'Select language'}
                       >
@@ -635,7 +532,7 @@ function Summarization() {
                     whileTap={{ scale: isComplete && !error ? 0.95 : 1 }}
                     transition={{ duration: 0.2 }}
                   >
-                    {isGenerating ? <div className="summary-spinner"></div> : <FiDownload />}
+                    <FiDownload />
                     <span>Download</span>
                   </motion.button>
                   <motion.button
@@ -660,7 +557,6 @@ function Summarization() {
                   </div>
                 ) : isTranslating ? (
                   <div className="summary-translating">
-                    <div className="summary-spinner"></div>
                     Translating to {languageOptions.find((l) => l.value === language)?.label}...
                   </div>
                 ) : translatedText ? (
@@ -725,29 +621,22 @@ function Summarization() {
                     >
                       <span className="summary-qa-question">Q: {qa.question}</span>
                       <div className="summary-qa-answer-card">
-                        {qa.loading ? (
-                          <div className="summary-qa-loading">
-                            <div className="summary-qa-spinner"></div>
-                            Processing...
-                          </div>
-                        ) : (
-                          <>
-                            <p className="summary-qa-answer">A: {qa.answer}</p>
-                            {qa.relevantSections && qa.relevantSections.length > 0 && (
-                              <div className="summary-qa-relevant-sections">
-                                <h5>Relevant Sections:</h5>
-                                {qa.relevantSections.map((section, i) => (
-                                  <div key={i} className="summary-qa-section">
-                                    <p
-                                      className="question-answer"
-                                      dangerouslySetInnerHTML={{ __html: section.content }}
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </>
-                        )}
+                        <>
+                          <p className="summary-qa-answer">A: {qa.answer}</p>
+                          {qa.relevantSections && qa.relevantSections.length > 0 && (
+                            <div className="summary-qa-relevant-sections">
+                              <h5>Relevant Sections:</h5>
+                              {qa.relevantSections.map((section, i) => (
+                                <div key={i} className="summary-qa-section">
+                                  <p
+                                    className="question-answer"
+                                    dangerouslySetInnerHTML={{ __html: section.content }}
+                                  />
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </>
                       </div>
                     </motion.div>
                   ))}
@@ -799,7 +688,6 @@ function Summarization() {
               Copied to clipboard!
             </motion.div>
           )}
-
           {showDownloadNotification && (
             <motion.div
               className="notification download-notification"
