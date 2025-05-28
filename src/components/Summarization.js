@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { FiUpload, FiZap, FiX, FiCheck, FiFile, FiCopy, FiSend, FiDownload, FiChevronDown, FiEdit, FiArrowLeft } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -23,8 +22,6 @@ function Summarization() {
   const [showDownloadNotification, setShowDownloadNotification] = useState(false);
   const [isLanguageDropdownOpen, setIsLanguageDropdownOpen] = useState(false);
   const navigate = useNavigate();
-
-  const sparkleColors = ['#26A69A', '#FF6F61', '#FFD54F', '#4FC3F7', '#AB47BC'];
 
   const languageOptions = [
     { value: 'english', label: 'English', flag: '🇬🇧', code: 'en' },
@@ -188,21 +185,28 @@ function Summarization() {
     setIsTranslating(true);
     try {
       const targetLang = languageOptions.find((l) => l.value === language)?.code || 'en';
+      console.log(`Translating summary to ${targetLang}: ${summaryText.substring(0, 50)}...`); // Debug log
       const response = await fetch('http://localhost:8000/translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: summaryText, lang: targetLang }),
+        body: JSON.stringify({ text: summaryText, lang: targetLang, chunked: true }),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Translation failed');
+        throw new Error(errorData.error || `Translation failed: ${response.status}`);
       }
 
       const data = await response.json();
-      setTranslatedText(data.translation || '');
+      console.log('Translation response:', data); // Debug log
+      const translated = data.translation || '';
+      if (!translated) {
+        throw new Error('No translation returned from the server');
+      }
+      setTranslatedText(translated);
     } catch (err) {
-      setError('Translation failed: ' + err.message);
+      console.error('Translation error:', err); // Debug log
+      setError(`Translation failed: ${err.message}`);
       setTranslatedText('');
     } finally {
       setIsTranslating(false);
