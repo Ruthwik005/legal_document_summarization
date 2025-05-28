@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useRef } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { FiUpload, FiX, FiFile, FiSend, FiArrowLeft } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -11,8 +11,8 @@ function QAPage() {
   const [qaHistory, setQaHistory] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentFilename, setCurrentFilename] = useState(null);
+  const [error, setError] = useState(null);
   const location = useLocation();
-  const inputBarRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,7 +33,8 @@ function QAPage() {
         } else {
           localStorage.removeItem('qaState');
         }
-      } catch (error) {
+      } catch (err) {
+        setError('Failed to load saved Q&A');
         localStorage.removeItem('qaState');
       }
     }
@@ -41,15 +42,14 @@ function QAPage() {
 
   useEffect(() => {
     if (qaHistory.length > 0 || selectedFile || currentFilename) {
-      const state = {
-        qaHistory,
-        currentFilename,
-        fileName: selectedFile ? selectedFile.name : null,
-      };
       try {
-        localStorage.setItem('qaState', JSON.stringify(state));
-      } catch (error) {
-        alert('Failed to save Q&A history');
+        localStorage.setItem('qaState', JSON.stringify({
+          qaHistory: qaHistory,
+          currentFilename,
+          fileName: selectedFile ? selectedFile.name : null,
+        }));
+      } catch (err) {
+        setError('Failed to save Q&A history');
       }
     }
   }, [qaHistory, selectedFile, currentFilename]);
@@ -58,68 +58,58 @@ function QAPage() {
     return () => {
       try {
         localStorage.removeItem('qaState');
-      } catch (error) {
-        alert('Failed to clear Q&A history');
+      } catch (err) {
+        setError('Failed to clear Q&A history');
       }
     };
   }, [location]);
 
-  useEffect(() => {
-    if (qaHistory.length > 0) {
-      const latestEntry = qaHistory[qaHistory.length - 1];
-      if (latestEntry.answer !== 'Processing...') {
-        setTimeout(() => {
-          try {
-            const answerElements = document.querySelectorAll('.qna-answer-card');
-            if (answerElements.length > 0) {
-              const lastAnswer = answerElements[answerElements.length - 1];
-              const scrollPosition = lastAnswer.offsetTop - 100;
-              window.scrollTo({
-                top: scrollPosition,
-                behavior: 'smooth',
-              });
-            }
-          } catch (error) {
-            if (inputBarRef.current) {
-              inputBarRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-          }
-        }, 100);
-      }
-    }
-  }, [qaHistory]);
-
-  const handleFileChange = useCallback(async (file) => {
+  const handleFileChange = useCallback(async (file, retries = 3, delay = 5000) => {
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setError('File size exceeds 5MB. Processing may be slow due to API limits.');
+      return;
+    }
     setIsProcessing(true);
+    setError(null);
     try {
       const formData = new FormData();
       formData.append('file', file);
-      const response = await fetch('http://localhost:5000/upload', {
+      const response = await fetch('http://localhost:8001/upload', {
         method: 'POST',
         body: formData,
       });
-      const result = await response.json();
-      if (!response.ok || result.status !== 'success') {
-        throw new Error(result.error || 'Failed to upload document');
+
+      if (response.status === 503 && retries > 0) {
+        setError(`Server is initializing. Retrying in ${delay/1000}s...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return handleFileChange(file, retries - 1, delay * 2);
       }
-      setCurrentFilename(result.filename);
+
+      if (!response.ok || response.status !== 200) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to upload document');
+      }
+
+      const data = await response.json();
+      if (data.status !== 'success') {
+        throw new Error(data.error || 'Failed to upload document');
+      }
+
+      setCurrentFilename(data.filename);
       setSelectedFile(file);
       setQaHistory([]);
       localStorage.removeItem('qaState');
-    } catch (error) {
-      alert(`Error uploading document: ${error.message}`);
+    } catch (err) {
+      setError(`Error uploading document: ${err.message}`);
     } finally {
       setIsProcessing(false);
     }
   }, []);
 
-  const handleInputChange = useCallback(
-    (event) => {
-      handleFileChange(event.target.files[0]);
-    },
-    [handleFileChange]
-  );
+  const handleInputChange = useCallback((event) => {
+    handleFileChange(event.target.files[0]);
+  }, [handleFileChange]);
 
   const handleDragEnter = useCallback((e) => {
     e.preventDefault();
@@ -138,47 +128,45 @@ function QAPage() {
     e.stopPropagation();
   }, []);
 
-  const handleDrop = useCallback(
-    (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setIsDragging(false);
-      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-        handleFileChange(e.dataTransfer.files[0]);
-      }
-    },
-    [handleFileChange]
-  );
+  const handleDrop = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleFileChange(e.dataTransfer.files[0]);
+    }
+  }, [handleFileChange]);
 
   const handleRemoveFile = useCallback(() => {
     setSelectedFile(null);
     setCurrentFilename(null);
     setQaHistory([]);
+    setError(null);
     try {
       localStorage.removeItem('qaState');
-    } catch (error) {
-      alert('Failed to clear Q&A history');
+    } catch (err) {
+      setError('Failed to clear Q&A history');
     }
   }, []);
 
   const handleQuestionSubmit = useCallback(
-    async (e) => {
+    async (e, retries = 3, delay = 5000) => {
       if (
         ((e.key === 'Enter' && !e.shiftKey && question.trim()) || e.type === 'click') &&
         !isProcessing
       ) {
         e.preventDefault();
         if (!selectedFile) {
-          alert('Please upload a document first.');
+          setError('Please upload a document first.');
           return;
         }
         if (question.trim().split(/\s+/).length < 3) {
-          alert('Please ask a more detailed question (minimum 3 words)');
+          setError('Please ask a more detailed question (minimum 3 words)');
           return;
         }
 
         const newQaEntry = {
-          question: question,
+          question,
           answer: 'Processing...',
           sections: [],
           isRelevant: true,
@@ -191,34 +179,50 @@ function QAPage() {
           const formData = new FormData();
           formData.append('file', selectedFile);
           formData.append('question', question);
-          const response = await fetch('http://localhost:5000/ask', {
+          const response = await fetch('http://localhost:8001/ask', {
             method: 'POST',
             body: formData,
           });
-          const result = await response.json();
-          if (!response.ok || result.status !== 'success') {
-            throw new Error(result.error || 'Failed to get answer');
+
+          if (response.status === 503 && retries > 0) {
+            setError(`Server is initializing. Retrying in ${delay/1000}s...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            return handleQuestionSubmit(e, retries - 1, delay * 2);
           }
+
+          if (!response.ok || response.status !== 200) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to get answer');
+          }
+
+          const data = await response.json();
+          if (data.status !== 'success') {
+            throw new Error(data.error || 'Failed to get answer');
+          }
+
           setQaHistory((prev) => {
-            const updated = [...prev];
-            updated[updated.length - 1] = {
+            const updatedHistory = [...prev];
+            updatedHistory[prev.length - 1] = {
               question,
-              answer: result.answer,
-              sections: result.sections || [],
-              isRelevant: result.isRelevant,
-              filename: result.filename,
+              answer: data.answer,
+              sections: data.sections || [],
+              isRelevant: data.isRelevant,
+              filename: data.filename,
             };
-            return updated;
+            return updatedHistory;
           });
-        } catch (error) {
+        } catch (err) {
+          setError(`Error processing question: ${err.message}`);
           setQaHistory((prev) => {
-            const updated = [...prev];
-            updated[updated.length - 1] = {
-              ...updated[updated.length - 1],
-              answer: `Error: Upload File again`,
+            const updatedHistory = [...prev];
+            updatedHistory[prev.length - 1] = {
+              question,
+              answer: `Error: ${err.message}`,
+              sections: [],
               isRelevant: false,
+              filename: null,
             };
-            return updated;
+            return updatedHistory;
           });
         } finally {
           setIsProcessing(false);
@@ -234,15 +238,25 @@ function QAPage() {
 
   return (
     <div className="qna-main-page">
+      {error && (
+        <motion.div
+          className="qna-error-notification"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          onClick={() => setError(null)}
+        >
+          {error}
+        </motion.div>
+      )}
       <motion.button
         className="qna-back-btn"
         onClick={handleBackClick}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         transition={{ duration: 0.2 }}
-        aria-label="Back to model page"
       >
-        <FiArrowLeft className="qna-back-icon" />
+        <FiArrowLeft />
       </motion.button>
 
       <div className="qna-file-upload-section">
@@ -253,7 +267,7 @@ function QAPage() {
           transition={{ duration: 0.5, ease: 'easeOut' }}
         >
           <h3>Legal Document Q&A</h3>
-          <p>Ask questions about your legal documents</p>
+          <p>Ask questions about your legal documents. Large files (>5MB) may cause delays due to API limits.</p>
           <div
             className={`qna-upload-area ${isDragging ? 'dragging' : ''} ${isProcessing ? 'processing' : ''}`}
             onDragEnter={handleDragEnter}
@@ -261,7 +275,7 @@ function QAPage() {
             onDragOver={handleDragOver}
             onDrop={handleDrop}
           >
-            <AnimatePresence mode="wait">
+            <AnimatePresence>
               {selectedFile ? (
                 <motion.div
                   key="file-preview"
@@ -274,6 +288,7 @@ function QAPage() {
                   <div className="qna-file-info">
                     <FiFile className="qna-file-icon" />
                     <p className="qna-file-name">{selectedFile.name}</p>
+                    {isProcessing && <div className="qna-spinner">Processing...</div>}
                   </div>
                   <motion.button
                     className="qna-remove-file"
@@ -310,7 +325,6 @@ function QAPage() {
                 disabled={isProcessing}
               />
               <motion.div
-                className="qna-btn-icon-wrapper"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 transition={{ duration: 0.2 }}
@@ -341,7 +355,7 @@ function QAPage() {
                       className="qna-entry"
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1, ease: 'easeOut' }}
+                      transition={{ duration: 0.3, delay: index * 0.1 }}
                     >
                       <span className="qna-question">Q: {qa.question}</span>
                       <div className={`qna-answer-card ${!qa.isRelevant ? 'irrelevant' : ''}`}>
@@ -355,7 +369,7 @@ function QAPage() {
                                   className="qna-paragraph"
                                   dangerouslySetInnerHTML={{ __html: section.content }}
                                 />
-                                <small>Relevance score: {section.score.toFixed(2)}</small>
+                                <small>Relevance: {section.score.toFixed(2)}</small>
                               </div>
                             ))}
                           </div>
@@ -369,7 +383,7 @@ function QAPage() {
                   </p>
                 )}
               </div>
-              <div className="qna-input-bar" ref={inputBarRef}>
+              <div className="qna-input-bar">
                 <textarea
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
