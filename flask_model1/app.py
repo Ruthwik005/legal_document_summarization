@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 # Model configuration for summarization
 MODEL_NAME = "Ruthwik/LExiMinD_legal_t5_summarizer"
-CHUNK_SIZE = 512  # Original value as requested
+CHUNK_SIZE = 512
 DEFAULT_MAX_LENGTH = 300
 DEFAULT_MIN_LENGTH = 100
 
@@ -267,15 +267,20 @@ def translate_text(text, target_lang):
     max_retries = 3
     for attempt in range(max_retries):
         try:
+            logger.info(f"Translating to {target_lang} using MyMemory: {text[:50]}...")
             response = requests.get(
                 app.config['MYMEMORY_URL'],
                 params={'q': text, 'langpair': f'en|{target_lang}'},
                 timeout=app.config['REQUEST_TIMEOUT']
             )
+            logger.info(f"MyMemory response status: {response.status_code}")
             if response.status_code == 200:
                 data = response.json()
+                logger.info(f"MyMemory response data: {data}")
                 if 'responseData' in data and 'translatedText' in data['responseData']:
-                    return data['responseData']['translatedText']
+                    translated = data['responseData']['translatedText']
+                    logger.info(f"MyMemory translated text: {translated[:50]}...")
+                    return translated
             elif response.status_code == 429:
                 logger.warning(f"MyMemory rate limit hit, retrying {attempt + 1}/{max_retries}")
                 time.sleep(2 ** attempt)
@@ -287,15 +292,20 @@ def translate_text(text, target_lang):
     # Fallback to LibreTranslate
     for attempt in range(max_retries):
         try:
+            logger.info(f"Translating to {target_lang} using LibreTranslate: {text[:50]}...")
             response = requests.post(
                 app.config['LIBRE_URL'],
                 json={'q': text, 'source': 'en', 'target': target_lang},
                 timeout=app.config['REQUEST_TIMEOUT']
             )
+            logger.info(f"LibreTranslate response status: {response.status_code}")
             if response.status_code == 200:
                 data = response.json()
+                logger.info(f"LibreTranslate response data: {data}")
                 if 'translatedText' in data:
-                    return data['translatedText']
+                    translated = data['translatedText']
+                    logger.info(f"LibreTranslate translated text: {translated[:50]}...")
+                    return translated
             elif response.status_code == 429:
                 logger.warning(f"LibreTranslate rate limit hit, retrying {attempt + 1}/{max_retries}")
                 time.sleep(2 ** attempt)
@@ -423,7 +433,7 @@ def translate_endpoint():
     data = request.get_json()
     text = data.get('text')
     lang = data.get('lang')
-    chunked = data.get('chunked', False)
+    chunked = data.get('chunked', True)  # Enable chunking by default for robustness
     
     if not text or not lang:
         return jsonify({
@@ -439,6 +449,7 @@ def translate_endpoint():
     
     try:
         if chunked and len(text) > MAX_LENGTH:
+            logger.info(f"Chunking text for translation. Text length: {len(text)}")
             chunks = [text[i:i + MAX_LENGTH] for i in range(0, len(text), MAX_LENGTH)]
             translated_chunks = [translate_text(chunk, lang) for chunk in chunks]
             translated_text = ' '.join(translated_chunks)
@@ -446,7 +457,7 @@ def translate_endpoint():
             translated_text = translate_text(text, lang)
         
         return jsonify({
-            'translated_text': translated_text,
+            'translation': translated_text,  # Changed key to match frontend expectation
             'status': 'success'
         })
     
